@@ -1,0 +1,26 @@
+{
+  "name": "x-intern",
+  "version": "1.0.0",
+  "description": "a platform for apprenticeship",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon Server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mamabear25/X-intern.git"
+  },
+  "author": "Radicalx squad 05",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mamabear25/X-intern/issues"
+  },
+  "homepage": "https://github.com/mamabear25/X-intern#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "firebase": "^9.10.0",
+    "firebase-admin": "^11.0.1"
+  }
+}
