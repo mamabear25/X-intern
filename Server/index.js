@@ -1,11 +1,11 @@
-require("dotenv").config() // load .env variables
+require("dotenv").config(); // load .env variables
 const express = require("express");
-const cors = require("cors");
 const database = require("../database");
-const internRoutes = require("./routes/InternRoutes");
 const morgan = require("morgan") //import morgan
-const apprenticeshipModel = require("./models/apprenticeshipModel");
 const {log} = require("mercedlogger") // import mercedlogger's log function
+const cors = require("cors");
+const internRoutes = require("./routes/InternRoutes");
+const apprenticeshipModel = require("./models/apprenticeshipModel");
 const Apprenticeship = require("./models/apprenticeshipModel");
 
 
@@ -15,13 +15,10 @@ const {PORT = 3000} = process.env;
 
 const app = express();
 
-app.use(express.json());
-app.use(cors());
-app.use(morgan("tiny")) // log the request for debugging
-app.use("",internRoutes.routes);
-
 // GLOBAL MIDDLEWARE
 app.use(cors()) // add cors headers
+app.use(morgan("tiny")) // log the request for debugging
+app.use("",internRoutes.routes);
 app.use(express.static('public'));
 app.use(express.json()) // parse json bodies
 
