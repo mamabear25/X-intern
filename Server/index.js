@@ -1,26 +1,17 @@
-require("dotenv").config(); // load .env variables
 const express = require("express");
-const database = require("../database");
-const morgan = require("morgan") //import morgan
-const {log} = require("mercedlogger") // import mercedlogger's log function
-const cors = require("cors");
 const internRoutes = require("./routes/InternRoutes");
-const apprenticeshipModel = require("./models/apprenticeshipModel");
-const Apprenticeship = require("./models/apprenticeshipModel");
+const { db } = require("./db/firebaseConfig.js")
 
 
-database.connectToMongoDB();
-
-const {PORT = 3000} = process.env;
 
 const app = express();
+const PORT = 3000
 
-// GLOBAL MIDDLEWARE
-app.use(cors()) // add cors headers
-app.use(morgan("tiny")) // log the request for debugging
+app.use(express.json()) // parse json 
 app.use("",internRoutes.routes);
+
 app.use(express.static('public'));
-app.use(express.json()) // parse json bodies
+
 
 // Routes
 
@@ -30,63 +21,67 @@ app.get("/", (req, res) => {
     res.send("this will be the endpoint for the home page")
 });
 
-//get all appreticeships
-app.get("/apprenticeships", async (req, res) => {
-    const appreticeships = await apprenticeshipModel.find().limit(10)
-    return res.json({ status: true, appreticeships})
-})
-
 
 // post new apprenticeship
+
 app.post("/new/apprenticeship", async (req, res) => {
     try {
-        req.body.apprentTitle = (req.body.apprentTitle)
-        req.body.compDescription = (req.body.compDescription)
-        req.body.introVideo = (req.body.introVideo)
-        req.body.teamType = (req.body.teamType)
-        req.body.teamRoles = (req.body.teamRoles)
-        req.body.teamAdmin = (req.body.teamAdmin)
-        req.body.timeline = (req.body.timeline)
-        
-        // create new user
-        const apprenticeship = await Apprenticeship.create(req.body);
-        // send new user as response
-        res.json(apprenticeship);
-    }   catch (error) {
-        console.log({error})
-        res.status(400).json({error});
+        const compJson = {
+            compTitle: req.body.compTitle,
+            compDesc: req.body.compDesc,
+            appDesc: req.body.appDesc,
+            introVideo: req.body.introVideo,
+            teamType: req.body.teamType,
+            teamRoles: req.body.teamRoles,
+            teamAdmin: req.body.teamAdmin,
+            timeline: req.body.timeline,
+        };
+        const { id } = await db.collection("apprenticeships").add(compJson);
+        res.send({status: true, id, compJson})
+    } catch (error) {
+        res.send(error);
+    }}
+);
+
+
+// get all apprenticeships
+
+app.get("/apprenticeship", async (req, res) => {
+    try {
+        const apprenticeshipRef = db.collection("apprenticeships");
+        const response = await apprenticeshipRef.get();
+        let responseArr = [];
+        response.forEach(doc => {
+            responseArr.push(doc.data());
+        });
+        res.send({status: true, responseArr});
+    } catch (error) {
+        res.send(error);
     }
-});
+})
 
-
-// update apprenticeship
-app.patch("/apprenticeship/:id", async (req, res) => {
-    const { id } = req.params;
-
-    const apprenticeship = await apprenticeshipModel.findById(id)
-
-    if (!apprenticeship) {
-        return res.status(404).json({status: false, apprenticeship: null })
+//update existing apprenticeship
+app.patch("/update/apprenticeship/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const response = req.body;
+        const apprenticeshipRef = await db.collection("apprenticeships").doc(id)
+        .update(response);
+        res.send({status: true, id, response});
+    } catch(error) {
+        res.send(error);
     }
-    
-    await apprenticeship.save()
-
-    return res.json({ status: true, apprenticeship})
-
 });
 
 // delete apprenticeship
-app.delete("/delete/:id", async (req, res) => {
-    const { id } = req.body;
-    const deleted = await Apprenticeship.findById(req.params.id)
-
-    if (!deleted) {
-        return res.status(400).json({status: true, deleted: null})
+app.delete("/delete/apprenticeship/:id", async (req, res) => {
+    try {
+        const response = await db.collection("apprenticeships").doc(req.params.id).delete();
+        console.log(response)
+        res.send({message: "apprenticeship deleted successfully"});
+    } catch(error) {
+        res.send(error);
     }
-
-    await Apprenticeship.deleteOne()
-    return res.json({ status: true, message: "apprenticeship succesfully deleted", deleted})
-
 })
 
-app.listen(PORT, () => log.green("SERVER STATUS", `Listening on port ${PORT}`))
+app.listen(PORT, () => ("SERVER STATUS", `Listening on port ${PORT}`))
