@@ -1,11 +1,16 @@
-const express = require("express");
-const {addInternship} = require("../controllers/internController");
+const express = require('express')
+const {
+	addInternship,
+	getInternshipById,
+	getInternships
+} = require('../controllers/internController')
 
+const router = express.Router()
 
-const router = express.Router();
-
-router.post("/internship",addInternship);
+router.post('/internships', addInternship)
+router.get('/internships/:id', getInternshipById)
+router.get('/interships', getInternships)
 
 module.exports = {
-    routes :router
+	routes: router
 }
