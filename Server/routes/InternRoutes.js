@@ -12,8 +12,6 @@ const router = express.Router()
 router.post('/internships', addInternship)
 router.get('/internships/:id', getInternshipById)
 router.get('/interships', getInternships)
-router.post('/add/internships', addInternship)
-router.get('/internships', getInternships)
 router.put('/update/internships/id', updateInternship)
 router.delete('/delete/Internships/:id', deleteInternship)
 

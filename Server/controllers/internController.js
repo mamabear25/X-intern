@@ -1,12 +1,12 @@
 const { db } = require('../db/firebaseConfig')
 const Internship = require('../models/Internship')
 
-const addInternship = async (req, res, next) => {
+const addInternship = async (req, res) => {
 	try {
 		await db.collection('Internships').doc().set(req.body)
-		res.send('Record saved successfully')
+		return res.send('Record saved successfully')
 	} catch (error) {
-		res.status(400).send(error.message)
+		return res.status(400).send(error.message)
 	}
 }
 
@@ -46,21 +46,23 @@ const updateInternship = async (req, res, next) => {
 	try {
 		const id = req.params.id
 		const response = req.body
-		const InternshipRef = await db.collection('Internship').doc(id).update(req.body)
-		res.send({ status: true, id, response })
+		const InternshipRef = await db.collection('Internships').doc(id).update(req.body)
+		return res.send({ status: true, id, response })
 	} catch (error) {
-		res.status(400).send(error)
+		return res.status(400).send(error)
 	}
 }
+
 const deleteInternship = async (req, res, next) => {
 	try {
-		const response = await db.collection('Internship').doc(req.params.id).delete()
+		const response = await db.collection('Internships').doc(req.params.id).delete()
 		console.log(response)
-		res.send({ message: 'apprenticeship deleted successfully' })
+		return res.send({ message: 'apprenticeship deleted successfully' })
 	} catch (error) {
-		res.status(400).send(error)
+		return res.status(400).send(error)
 	}
 }
+
 module.exports = {
 	addInternship,
 	getInternships,
