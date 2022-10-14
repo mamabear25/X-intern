@@ -12,7 +12,7 @@ const addInternship = async (req, res, next) => {
 
 const getInternships = async (req, res) => {
 	try {
-		const internships = await doc.collection('Internships').get()
+		const internships = await db.collection('Internships').get()
 		const responsearray = []
 
 		internships.forEach((doc) => {
@@ -42,8 +42,29 @@ const getInternshipById = async (req, res) => {
 	}
 }
 
+const updateInternship = async (req, res, next) => {
+	try {
+		const id = req.params.id
+		const response = req.body
+		const InternshipRef = await db.collection('Internship').doc(id).update(req.body)
+		res.send({ status: true, id, response })
+	} catch (error) {
+		res.status(400).send(error)
+	}
+}
+const deleteInternship = async (req, res, next) => {
+	try {
+		const response = await db.collection('Internship').doc(req.params.id).delete()
+		console.log(response)
+		res.send({ message: 'apprenticeship deleted successfully' })
+	} catch (error) {
+		res.status(400).send(error)
+	}
+}
 module.exports = {
 	addInternship,
+	getInternships,
 	getInternshipById,
-	getInternships
+	updateInternship,
+	deleteInternship
 }
