@@ -48,14 +48,14 @@ app.post("/new/apprenticeship", async (req, res) => {
 
 app.get("/apprenticeship", async (req, res) => {
     try {
-        const apprenticeshipRef = db.collection("apprenticeships");
+        
+    } catch (error) {const apprenticeshipRef = db.collection("apprenticeships");
         const response = await apprenticeshipRef.get();
         let responseArr = [];
         response.forEach(doc => {
             responseArr.push(doc.data());
         });
         res.send({status: true, responseArr});
-    } catch (error) {
         res.send(error);
     }
 })
@@ -63,9 +63,8 @@ app.get("/apprenticeship", async (req, res) => {
 //update existing apprenticeship
 app.patch("/update/apprenticeship/:id", async (req, res) => {
     try {
-        const { id } = req.params;
         const response = req.body;
-        const apprenticeshipRef = await db.collection("apprenticeships").doc(id)
+        const internshipRef = await db.collection("apprenticeships").doc(req.params.id)
         .update(response);
         res.send({status: true, id, response});
     } catch(error) {
