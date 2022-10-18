@@ -2,9 +2,11 @@ const { db } = require('../db/firebaseConfig')
 const Internship = require('../models/Internship')
 
 const addInternship = async (req, res) => {
+	const obj = req.body
 	try {
-		await db.collection('Internships').doc().set(req.body)
-		return res.send('Record saved successfully')
+		const Internshipdetails = { ...obj }
+		const newintenship = await db.collection('Internships').add(Internshipdetails)
+		return res.status(201).json({ id: newintenship.id, ...Internshipdetails })
 	} catch (error) {
 		return res.status(400).send(error.message)
 	}
@@ -16,7 +18,7 @@ const getInternships = async (req, res) => {
 		const responsearray = []
 
 		internships.forEach((doc) => {
-			responsearray.push(doc.data())
+			responsearray.push({ id: doc.id, ...doc.data() })
 		})
 
 		return res.status(200).json(responsearray)
